@@ -1,14 +1,24 @@
 import { useParams } from 'react-router-dom'
 import { products } from '../data'
+import { useDocumentMeta } from '../useDocumentMeta'
 
-// Mission : quelle que soit la route visitée, l'onglet affiche toujours le
-// même titre générique, et un lien partagé sur les réseaux sociaux montre
-// toujours le même aperçu (og:title/og:description jamais mis à jour).
-// C'est exactement le problème SEO des SPA vu dans la quête.
+const NOT_FOUND_DESCRIPTION =
+  "Ce produit n'existe pas ou n'est plus disponible. Retrouvez toute la gamme CycloShop."
 
 export default function Product() {
   const { slug } = useParams()
   const product = products.find((p) => p.slug === slug)
+
+  const description = product
+    ? `${product.description} ${product.name} à ${product.price} € sur CycloShop.`
+    : NOT_FOUND_DESCRIPTION
+
+  useDocumentMeta({
+    title: product ? `${product.name} | CycloShop` : 'Produit introuvable | CycloShop',
+    description,
+    ogTitle: product ? `${product.name} - CycloShop` : 'Produit introuvable - CycloShop',
+    ogDescription: description,
+  })
 
   if (!product) return <p className="page">Produit introuvable.</p>
 
